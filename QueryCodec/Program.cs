@@ -59,6 +59,23 @@ namespace QueryCodec
         static void RunCommand(string host, string user, string password, string command)
         {
             Console.WriteLine("--> Host={0}, User={1}, Password={2}, Command={3}", host, user, password, command);
+
+            ConnectionInfo info = new ConnectionInfo(host, user,
+                new AuthenticationMethod[]
+                {
+                    new PasswordAuthenticationMethod(user, password)
+                });
+
+            using (SshClient client = new SshClient(info))
+            {
+                SshCommand output;
+
+                client.Connect();
+                output = client.RunCommand(command);
+                client.Disconnect();
+
+                Console.WriteLine("<-- {0}", output.Result);
+            }
         }
     }
 }
